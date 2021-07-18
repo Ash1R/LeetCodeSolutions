@@ -8,10 +8,10 @@ import java.net.URL;
 import java.nio.file.Paths;
 
 public class ImgSmall {
-  public static void main(String[] args) throws IOException {
+  public static void main(String[] args)  {
       resize(args);
   }
-  public static void resize(String[] args) throws IOException{
+  public static void resize(String[] args) {
     if (args.length != 2){
       System.out.println("please put in a url and a percent");
       System.exit(0);
@@ -21,17 +21,26 @@ public class ImgSmall {
     try{
       url = new URL(args[0]);
     } catch (MalformedURLException mfue){
+
       System.out.println("check the url");
+      System.out.println("-");
       System.out.print(args[0]);
+      System.exit(0);
+    }
+    if (Integer.parseInt(args[1]) > 100){
+      System.out.println("Can't reduce by that much");
       System.exit(0);
     }
     double resizeBy = (100 - Integer.parseInt(args[1])) / 100.0;
     BufferedImage img = null;
     //get image from url
-
-    img = ImageIO.read(url);
+    try {
+    img = ImageIO.read(url);}
+    catch (IOException ioe){
+      System.out.println(ioe.getMessage());
+    }
     if (img == null){
-      System.out.print("Please put in an image");
+      System.out.print("The URL you entered does not contain any image, please check");
       System.exit(0);
     }
     //resize image into Image object, SCALE_FAST is a random algorithm
@@ -59,7 +68,16 @@ public class ImgSmall {
 
     File out =
         new File(filename + "_" + args[1] + extension);
-    //Write output to file, using the "jpg" file type
+    //Write output to file
+    if (!extension.equals("png")&&!extension.equals("PNG")&&!extension.equals(
+        "JPG")&&!extension.equals("jpg")&&!extension.equals("gif")&&!extension.equals("GIF")){
+      System.out.println("invalid file type");
+    }
+    try{
     ImageIO.write(bufferedImage, extension, out);
+    } catch (IOException ioe){
+      System.out.println(ioe.getMessage());
+    }
+    System.out.println("Image reduced by " + args[1] + "% and saved to " + out.getName());
   }
 }
